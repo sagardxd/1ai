@@ -6,6 +6,7 @@ import { FontProvider } from "@/contexts/font-context";
 import { BlurProvider } from "@/contexts/blur-context";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/config/site";
+import { ThemeProvider } from "@/components/theme-provider";
 export const metadata: Metadata = siteConfig;
 
 const proxima = localFont({
@@ -52,12 +53,19 @@ export default function RootLayout({
       <body
         className={`${proxima.className} ${inter.className} ${geist.className} ${playfair.className} ${roboto.className}`}
       >
-          <FontProvider>
-            <BlurProvider>
-              {children}
-              <Toaster />
-            </BlurProvider>
-          </FontProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+            <FontProvider>
+              <BlurProvider>
+                {children}
+                <Toaster />
+              </BlurProvider>
+            </FontProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
