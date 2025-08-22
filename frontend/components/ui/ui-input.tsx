@@ -18,7 +18,6 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import remarkGfm from "remark-gfm";
 import { Geist_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { api } from "@/trpc/react";
 import TabsSuggestion from "./tabs-suggestion";
 import { ModelSelector } from "@/components/ui/model-selector";
 import { DEFAULT_MODEL_ID } from "@/models/constants";

@@ -12,9 +12,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "./button";
-import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Input } from "./input";

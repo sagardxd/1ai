@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist, Inter, Playfair_Display, Roboto } from "next/font/google";
-import { TRPCReactProvider } from "@/trpc/react";
 import localFont from "next/font/local";
 import { FontProvider } from "@/contexts/font-context";
 import { BlurProvider } from "@/contexts/blur-context";
@@ -53,14 +52,12 @@ export default function RootLayout({
       <body
         className={`${proxima.className} ${inter.className} ${geist.className} ${playfair.className} ${roboto.className}`}
       >
-        <TRPCReactProvider>
           <FontProvider>
             <BlurProvider>
               {children}
               <Toaster />
             </BlurProvider>
           </FontProvider>
-        </TRPCReactProvider>
       </body>
     </html>
   );
