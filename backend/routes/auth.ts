@@ -12,6 +12,9 @@ const prismaClient = new PrismaClient();
 
 const router = Router();
 
+// Temporarily adding local user otp cache
+const otpCache = new Map<string, string>();
+
 // TODO: Rate limit this
 router.post("/initiate_signin", perMinuteLimiter, async (req, res) => {
     try {
@@ -32,6 +35,7 @@ router.post("/initiate_signin", perMinuteLimiter, async (req, res) => {
             console.log(`Log into your 1ai `, otp);
         }
 
+        otpCache.set(data.email, otp);
         try {
             await prismaClient.user.create({
                 data: {
@@ -67,8 +71,10 @@ router.post("/signin", perMinuteLimiterRelaxed, async (req, res) => {
     console.log(data);
     // Verify with some totp lib
     const { otp } = TOTP.generate(base32.encode(data.email + process.env.JWT_SECRET!));
-    
-    if(otp !== data.otp) {
+    console.log("expected otp is", otp);
+    console.log("otpCache is", otpCache.get(data.email));
+
+    if(otp !== data.otp && otp !== otpCache.get(data.email)) {
         res.status(401).json({
             message: "Invalid otp"
         })
