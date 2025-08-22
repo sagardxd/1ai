@@ -1,4 +1,5 @@
 "use client";
+import { v4 } from "uuid";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ const UIInput = () => {
   const { resolvedTheme } = useTheme();
   const { user, isLoading: isUserLoading } = useUser();
   const router = useRouter();
+  const [conversationId, setConversationId] = useState<string | null>(v4());
 
   const toggleWrap = useCallback(() => {
     setIsWrapped((prev) => !prev);
@@ -229,11 +231,13 @@ const UIInput = () => {
               body: JSON.stringify({
                 message: currentQuery,
                 model: model,
+                conversationId: conversationId,
               }),
               signal: abortControllerRef.current?.signal,
             });
 
             await processStream(response, currentQuery);
+
           } catch (error) {
             if ((error as Error).name !== "AbortError") {
               console.error("Error sending message:", error);

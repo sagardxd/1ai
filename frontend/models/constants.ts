@@ -1,27 +1,13 @@
 import { type Model, ModelCapability, ModelProvider } from "./types";
 
 export const MODELS: Model[] = [
-  {
-    id: "google/gemini-2.5-pro",
-    name: "Gemini 2.5 Pro",
-    provider: ModelProvider.GOOGLE,
-    description: "High-performance multimodal model for advanced tasks",
-    maxTokens: 32768,
-    pricePer1kTokens: 0.002,
-    capabilities: [
-      ModelCapability.TEXT,
-      ModelCapability.CODE,
-      ModelCapability.FUNCTION_CALLING,
-    ],
-    isAvailable: true,
-  },
   // {
-  //   id: "google/gemini-2.5-flash",
-  //   name: "Gemini 2.5 Flash",
+  //   id: "google/gemini-2.5-pro",
+  //   name: "Gemini 2.5 Pro",
   //   provider: ModelProvider.GOOGLE,
-  //   description: "Fast and efficient model for most tasks",
-  //   maxTokens: 16385,
-  //   pricePer1kTokens: 0.0015,
+  //   description: "High-performance multimodal model for advanced tasks",
+  //   maxTokens: 32768,
+  //   pricePer1kTokens: 0.002,
   //   capabilities: [
   //     ModelCapability.TEXT,
   //     ModelCapability.CODE,
@@ -29,6 +15,20 @@ export const MODELS: Model[] = [
   //   ],
   //   isAvailable: true,
   // },
+  {
+    id: "google/gemini-2.5-flash",
+    name: "Gemini 2.5 Flash",
+    provider: ModelProvider.GOOGLE,
+    description: "Fast and efficient model for most tasks",
+    maxTokens: 16385,
+    pricePer1kTokens: 0.0015,
+    capabilities: [
+      ModelCapability.TEXT,
+      ModelCapability.CODE,
+      ModelCapability.FUNCTION_CALLING,
+    ],
+    isAvailable: true,
+  },
   // {
   //   id: "agentica-org/deepcoder-14b-preview:free",
   //   name: "DeepCoder 14B Preview",
