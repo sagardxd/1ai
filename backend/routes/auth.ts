@@ -25,6 +25,7 @@ router.post("/initiate_signin", perMinuteLimiter, async (req, res) => {
         // Generate TOTP using email and secret`
         console.log("before send email")
         const { otp, expires } = TOTP.generate(base32.encode(data.email + process.env.JWT_SECRET!));
+        console.log("otp is", otp);
         if (process.env.NODE_ENV !== "development") {
             await sendEmail(data.email, "Login to 1ai", `Log into 1ai your otp is ${otp}`);
         } else {
@@ -62,6 +63,8 @@ router.post("/signin", perMinuteLimiterRelaxed, async (req, res) => {
         return;
     }
 
+    console.log("data is");
+    console.log(data);
     // Verify with some totp lib
     const { otp } = TOTP.generate(base32.encode(data.email + process.env.JWT_SECRET!));
     
