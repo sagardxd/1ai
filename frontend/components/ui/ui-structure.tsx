@@ -118,7 +118,6 @@ export function UIStructure() {
                           asChild
                         >
                           <div className="flex w-full items-center justify-between">
-                            <Link href={`/ask/${chat.id}`}>
                               <span className="z-[-1]">
                                 {chat.title}
                               </span>
@@ -157,7 +156,6 @@ export function UIStructure() {
                                   />
                                 </div>
                               </div>
-                            </Link>
                           </div>
                         </SidebarMenuButton>
                       </SidebarMenuItem>

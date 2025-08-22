@@ -57,9 +57,7 @@ export const SidebarToggle = () => {
               <CommandGroup className="no-scrollbar" heading="Recent Chats">
                 {chats?.map((chat: Chat) => (
                   <CommandItem key={chat.id}>
-                    <Link href={`/ask/${chat.id}`}>
                       <span>{chat.messages[0]?.content}...</span>
-                    </Link>
                   </CommandItem>
                 ))}
               </CommandGroup>
