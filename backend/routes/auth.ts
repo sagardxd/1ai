@@ -74,7 +74,7 @@ router.post("/signin", perMinuteLimiterRelaxed, async (req, res) => {
     console.log("expected otp is", otp);
     console.log("otpCache is", otpCache.get(data.email));
 
-    if(otp !== data.otp && otp !== otpCache.get(data.email)) {
+    if(otp != data.otp && otp != otpCache.get(data.email)) {
         res.status(401).json({
             message: "Invalid otp"
         })
