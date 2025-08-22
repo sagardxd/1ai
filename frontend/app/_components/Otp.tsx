@@ -25,17 +25,19 @@ export function Otp({email}: {email: string}) {
 
         const data = await response.json();
 
-        if (data.status === 401) {
+        if (response.status === 401) {
           toast(data.message);
         }
 
-        if (data.status === 429) {
+        if (response.status === 429) {
           toast(data.message);
         }
 
-        if (data.status === 200) {
+        if (response.status === 200) {
           toast("User Logged In");
           router.replace('ask');
+        } else if (response.status !== 401 && response.status !== 429) {
+          toast(data.message || "An unexpected error occurred");
         }
       } catch (error) {
         console.error("Some error occured ", error);
