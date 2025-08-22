@@ -9,42 +9,42 @@ const TestimonialsSection: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const testimonials = [
-    {
-      name: "Sarah Chen",
-      role: "AI Researcher at Meta",
-      content:
-        "T3Dotgg revolutionized how I interact with multiple AI models. The unified interface saves me hours every day.",
-      result: "85% faster research iterations",
-      rating: 5,
-      avatar: "SC",
-    },
-    {
-      name: "Marcus Rodriguez",
-      role: "Senior Developer at Stripe",
-      content:
-        "The ability to compare responses from different models side-by-side is game-changing for our development workflow.",
-      result: "40% improvement in code quality",
-      rating: 5,
-      avatar: "MR",
-    },
-    {
-      name: "Emily Watson",
-      role: "Product Manager at Notion",
-      content:
-        "Finally, an AI tool that understands enterprise needs. The reliability and speed are unmatched.",
-      result: "60% reduction in response time",
-      rating: 5,
-      avatar: "EW",
-    },
-    {
-      name: "David Kim",
-      role: "CTO at StartupXYZ",
-      content:
-        "T3Dotgg became essential to our product development. The insights from multiple models are invaluable.",
-      result: "3x faster product iterations",
-      rating: 5,
-      avatar: "DK",
-    },
+    // {
+    //   name: "Sarah Chen",
+    //   role: "AI Researcher at Meta",
+    //   content:
+    //     "T3Dotgg revolutionized how I interact with multiple AI models. The unified interface saves me hours every day.",
+    //   result: "85% faster research iterations",
+    //   rating: 5,
+    //   avatar: "SC",
+    // },
+    // {
+    //   name: "Marcus Rodriguez",
+    //   role: "Senior Developer at Stripe",
+    //   content:
+    //     "The ability to compare responses from different models side-by-side is game-changing for our development workflow.",
+    //   result: "40% improvement in code quality",
+    //   rating: 5,
+    //   avatar: "MR",
+    // },
+    // {
+    //   name: "Emily Watson",
+    //   role: "Product Manager at Notion",
+    //   content:
+    //     "Finally, an AI tool that understands enterprise needs. The reliability and speed are unmatched.",
+    //   result: "60% reduction in response time",
+    //   rating: 5,
+    //   avatar: "EW",
+    // },
+    // {
+    //   name: "David Kim",
+    //   role: "CTO at StartupXYZ",
+    //   content:
+    //     "T3Dotgg became essential to our product development. The insights from multiple models are invaluable.",
+    //   result: "3x faster product iterations",
+    //   rating: 5,
+    //   avatar: "DK",
+    // },
   ];
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const TestimonialsSection: React.FC = () => {
             </h2>
             <p className="mt-2">
               See how leading companies and researchers are accelerating their
-              work with t3Dotgg
+              work with 1ai.co
             </p>
           </div>
         </ScrollReveal>
