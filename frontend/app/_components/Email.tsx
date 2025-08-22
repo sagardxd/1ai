@@ -51,8 +51,12 @@ export function Email({setEmail, setStep, email}: {setEmail: (email: string) => 
                         "Content-Type": "application/json",
                     },
                 }).then((res) => {
-                    setStep("otp");
-                    toast.success("OTP sent to email");
+                    if (res.status === 200) {
+                        setStep("otp");
+                        toast.success("OTP sent to email");
+                    } else {
+                        toast.error("Failed to send OTP, please retry after a few minutes");
+                    }
                 }).catch((err) => {
                     console.error(err);
                     toast.error("Failed to send OTP, please retry after a few minutes");
