@@ -34,8 +34,9 @@ export function Otp({email}: {email: string}) {
         }
 
         if (response.status === 200) {
-          toast("User Logged In");
-          router.replace('ask');
+          localStorage.setItem("token", data.token);
+          
+          window.location.href = "/";
         } else if (response.status !== 401 && response.status !== 429) {
           toast(data.message || "An unexpected error occurred");
         }
