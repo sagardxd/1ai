@@ -53,7 +53,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
       toast.loading("Initializing payment...", { id: "payment-init" });
       
       // Call the backend to create subscription order
-      const response = await axios.post(
+      const res = await axios.post(
         `${BACKEND_URL}/billing/init-subscribe`, 
         { 
           planType: plan.name.toLowerCase() 
@@ -67,17 +67,17 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
 
       toast.dismiss("payment-init");
 
-      if (response.data.orderId) {
+      if (res.data.orderId) {
         const options = {
-          key: response.data.rzpKey || RZP_KEY,
-          subscription_id: response.data.orderId,
+          key: res.data.rzpKey || RZP_KEY,
+          subscription_id: res.data.orderId,
           name: "1AI",
           description: `${plan.name} Subscription`,
           prefill: {
             name: user.name || "User",
             email: user.email || "",
           },
-          handler: (response: any) => {
+          handler: async (response: any) => {
             // Payment successful
             if (response.razorpay_payment_id) {
               toast.success("Payment successful! Your subscription is being activated...", {
@@ -88,12 +88,14 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
               let razorpay_payment_id = response.razorpay_payment_id;
 
               try {
-                axios.post(
+                console.log(BACKEND_URL);
+                console.log(response);
+                const response2 = await axios.post(
                     `${BACKEND_URL}/billing/verify-payment`,
                     {
                       signature,
                       razorpay_payment_id,
-                      orderId: response.data.orderId
+                      orderId: res.data.orderId
                     },
                     {
                       headers: {
@@ -102,7 +104,7 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
                     }
                   );
     
-                  if (response.data.success) {
+                  if (response2.data.success) {
                     toast.success("Payment successful! Your subscription is being activated...", {
                       duration: 3000
                     });
@@ -175,3 +177,6 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
 };
 
 export default RazorpayPayment;
+
+
+
