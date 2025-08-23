@@ -6,6 +6,7 @@ import {
 import { SelectTheme } from "@/components/ui/theme-toggler";
 import { UIStructure } from "@/components/ui/ui-structure";
 import { ThemeProvider } from "@/components/theme-provider";
+import { UpgradeCTA } from "@/components/ui/upgrade-cta";
 
 export default function ChatLayout({
   children,
@@ -36,8 +37,13 @@ export default function ChatLayout({
                 <SelectTheme />
               </div>
             </div>
-            <div className="mx-auto flex max-h-fit w-full max-w-3xl overflow-y-hidden">
-              {children}
+            <div className="mx-auto flex max-h-fit w-full max-w-3xl flex-col overflow-y-hidden">
+              <div className="mt-12 mb-2">
+                <UpgradeCTA variant="minimal" />
+              </div>
+              <div className="flex-1">
+                {children}
+              </div>
             </div>
             </div>
           </SidebarInset>

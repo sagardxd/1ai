@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +9,7 @@ import {
   StarIcon,
   LightningIcon 
 } from "@phosphor-icons/react/dist/ssr";
+import RazorpayPayment from "@/components/RazorpayPayment";
 
 const pricingPlans = [
   {
@@ -135,18 +138,21 @@ export default function PricingPage() {
                   ))}
                 </div>
 
-                <Button 
+                <RazorpayPayment
+                  plan={{
+                    name: plan.name,
+                    price: plan.price,
+                    currency: plan.currency,
+                    interval: plan.interval.replace('per ', '')
+                  }}
                   className={`w-full h-12 font-semibold ${
                     plan.highlight 
                       ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
                       : 'bg-muted hover:bg-muted/80 text-foreground'
                   }`}
-                  asChild
                 >
-                  <a href={plan.cta.href}>
-                    {plan.cta.text}
-                  </a>
-                </Button>
+                  {plan.cta.text}
+                </RazorpayPayment>
               </CardContent>
             </Card>
           ))}

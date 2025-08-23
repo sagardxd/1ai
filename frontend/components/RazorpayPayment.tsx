@@ -1,0 +1,157 @@
+"use client";
+
+import { BACKEND_URL } from "@/lib/utils";
+import React, { useState } from "react";
+import { useRazorpay, RazorpayOrderOptions } from "react-razorpay";
+import axios from "axios";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useUser } from "@/hooks/useUser";
+import { useCredits } from "@/hooks/useCredits";
+import { useRouter } from "next/navigation";
+
+const RZP_KEY = process.env.NEXT_PUBLIC_RZP_KEY ?? "rzp_live_haOcAMPhYa4O6r";
+
+interface RazorpayPaymentProps {
+  plan: {
+    name: string;
+    price: number;
+    currency: string;
+    interval: string;
+  };
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({ 
+  plan, 
+  className,
+  children 
+}) => {
+  const { error, isLoading: rzpLoading, Razorpay } = useRazorpay();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { user, isLoading: userLoading } = useUser();
+  const { userCredits } = useCredits();
+  const router = useRouter();
+
+  const handlePayment = async () => {
+    if (!user) {
+      toast.error("Please login to subscribe");
+      router.push("/auth");
+      return;
+    }
+
+    // Check if user is already premium
+    if (userCredits?.isPremium) {
+      toast.info("You're already subscribed to our premium plan!");
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      toast.loading("Initializing payment...", { id: "payment-init" });
+      
+      // Call the backend to create subscription order
+      const response = await axios.post(
+        `${BACKEND_URL}/billing/init-subscribe`, 
+        { 
+          planType: plan.name.toLowerCase() 
+        }, 
+        {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      toast.dismiss("payment-init");
+
+      if (response.data.orderId) {
+        const options = {
+          key: response.data.rzpKey || RZP_KEY,
+          subscription_id: response.data.orderId,
+          name: "1AI",
+          description: `${plan.name} Subscription`,
+          prefill: {
+            name: user.name || "User",
+            email: user.email || "",
+          },
+          handler: (response: any) => {
+            // Payment successful
+            if (response.razorpay_payment_id) {
+              toast.success("Payment successful! Your subscription is being activated...", {
+                duration: 3000
+              });
+              
+              // Show processing message
+              toast.loading("Processing subscription activation...", { id: "activation" });
+              
+              // Redirect to landing page after a delay to allow webhook processing
+              setTimeout(() => {
+                toast.dismiss("activation");
+                toast.success("Welcome to 1AI Premium! 🎉");
+                window.location.href = "/";
+              }, 5000);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setIsProcessing(false);
+              toast.info("Payment cancelled");
+            }
+          },
+          theme: {
+            color: "#F37254",
+          },
+        };
+
+        const razorpayInstance = new Razorpay(options as any);
+        razorpayInstance.open();
+      } else {
+        throw new Error("No subscription ID received from server");
+      }
+    } catch (error: any) {
+      console.error("Payment initialization error:", error);
+      toast.dismiss("payment-init");
+      
+      if (error?.response?.status === 401) {
+        toast.error("Please login again to continue");
+        router.push("/auth");
+      } else if (error?.response?.status === 429) {
+        toast.error("Too many requests. Please try again later.");
+      } else {
+        toast.error(
+          error?.response?.data?.error || 
+          error?.message ||
+          "Failed to initialize payment. Please try again."
+        );
+      }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const isLoading = rzpLoading || isProcessing || userLoading;
+
+  return (
+    <Button
+      onClick={handlePayment}
+      disabled={isLoading || !!error || userCredits?.isPremium}
+      className={className}
+    >
+      {isLoading ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Processing...
+        </>
+      ) : userCredits?.isPremium ? (
+        "Already Subscribed ✓"
+      ) : (
+        children || `Subscribe for ${plan.currency}${plan.price}/${plan.interval}`
+      )}
+    </Button>
+  );
+};
+
+export default RazorpayPayment;
