@@ -8,11 +8,8 @@ import rzpWebhookRouter from "./routes/rzpWebhookRouter"
 const app = express();
 app.use(cors())
 
-// Use raw body parser for webhook route to enable signature verification
-app.use("/rzp_webhook", rzpWebhookRouter);
-
-// Use JSON parser for all other routes
 app.use(express.json());
+app.use("/rzp_webhook", rzpWebhookRouter);
 app.use("/ai", aiRouter);
 app.use("/auth", authRouter);
 app.use("/billing", billingRouter);

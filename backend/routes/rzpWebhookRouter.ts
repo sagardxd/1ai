@@ -21,25 +21,14 @@ function verifyWebhookSignature(payload: string, signature: string): boolean {
   }
 }
 
-// Middleware to capture raw body for signature verification
-rzpWebhookRouter.use((req, res, next) => {
-  let data = '';
-  req.on('data', chunk => {
-    data += chunk;
-  });
-  req.on('end', () => {
-    req.body = JSON.parse(data);
-    (req as any).rawBody = data;
-    next();
-  });
-});
-
 rzpWebhookRouter.post("/", async (req, res) => {
   try {
     console.log("Webhook received:", req.body);
+    console.log(req.body);
+    console.log(req.headers);
     
     const signature = req.headers['x-razorpay-signature'] as string;
-    const rawBody = (req as any).rawBody;
+    const rawBody = req.body;
     
     // Verify webhook signature for security
     if (!verifyWebhookSignature(rawBody, signature)) {
@@ -135,3 +124,4 @@ rzpWebhookRouter.post("/", async (req, res) => {
 });
 
 export default rzpWebhookRouter;
+
