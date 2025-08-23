@@ -24,9 +24,10 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Logo } from "../svgs/logo";
-import { Conversation, useConversation } from "@/hooks/useConversation";
+import { Conversation } from "@/hooks/useConversation";
 import { useUser } from "@/hooks/useUser";
 import { useCredits } from "@/hooks/useCredits";
+import { useConversationContext } from "@/contexts/conversation-context";
 
 interface Chat {
   id: string;
@@ -41,7 +42,7 @@ interface Chat {
 export function UIStructure() {
   const [chats, setChats] = useState<Conversation[]>([]);
   const [hoverChatId, setHoverChatId] = useState<string>("");
-  const { conversations, loading, error } = useConversation();
+  const { conversations, loading, error, createNewConversation } = useConversationContext();
   const router = useRouter();
 
   useEffect(() => {
@@ -79,7 +80,8 @@ export function UIStructure() {
               <Button
                 onClick={(e) => {
                   e.preventDefault();
-                  router.push("/ask");
+                  const id = createNewConversation();
+                  router.push(`/ask/${id}`);
                 }}
                 variant="accent"
                 className="w-full"

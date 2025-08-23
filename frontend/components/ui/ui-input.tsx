@@ -31,6 +31,7 @@ import { useRouter } from "next/navigation";
 import { useConversationById } from "@/hooks/useConversation";
 import { useCredits } from "@/hooks/useCredits";
 import { UpgradeCTA } from "@/components/ui/upgrade-cta";
+import { useConversationContext } from "@/contexts/conversation-context";
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
@@ -66,6 +67,7 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
   const { user, isLoading: isUserLoading } = useUser();
   const {conversation, loading : converstionLoading} = useConversationById(initialConversationId)
   const { userCredits, isLoading: isCreditsLoading, refetchCredits } = useCredits();
+  const { refreshConversations } = useConversationContext();
   const router = useRouter();
 
   const toggleWrap = useCallback(() => {
@@ -210,6 +212,7 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
+      await refreshConversations();
     }
   };
 
