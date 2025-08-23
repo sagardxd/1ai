@@ -112,11 +112,6 @@ export default function AboutUs() {
           </CardHeader>
           <CardContent className="text-foreground/90 leading-relaxed">
             <p className="mb-4">
-              1AI is proudly part of the 100xDevs ecosystem, a thriving community of developers, 
-              creators, and tech enthusiasts. We leverage the collective expertise and feedback 
-              of this community to continuously improve our AI chat platform.
-            </p>
-            <p className="mb-4">
               Our platform is built with the principles of simplicity, reliability, and user-first 
               design that define the 100xDevs philosophy.
             </p>
