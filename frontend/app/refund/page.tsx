@@ -29,30 +29,12 @@ export default function RefundPolicy() {
             <CardTitle className="text-2xl">Policy Overview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 text-foreground/90 leading-relaxed">
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4 text-green-600 dark:text-green-400 flex items-center gap-2">
-                <CurrencyCircleDollarIcon className="size-5" weight="bold" />
-                Eligible for Refund
-              </h3>
-              <p className="mb-4">
-                You are entitled to a refund in the following circumstances:
-              </p>
-              <ul className="space-y-2 list-disc list-inside">
-                <li>
-                  <strong>Course Not Assigned:</strong> If the purchased course is not assigned to you within the expiration date from your date of purchase.
-                </li>
-                <li>
-                  <strong>Duplicate Payment:</strong> If you have paid twice for the same course.
-                </li>
-              </ul>
-            </div>
-
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4 text-red-600 dark:text-red-400">
                 Important Notice
               </h3>
               <p className="font-medium mb-4">
-                Under any other circumstance, we will not consider any requests for refund as this is a digital course purchase.
+                Under any other circumstance, we will not consider any requests for refund as this is a digital product.
               </p>
               <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
                 <p className="text-center font-semibold">
@@ -61,32 +43,6 @@ export default function RefundPolicy() {
               </div>
             </div>
 
-            <div>
-              <h3 className="text-xl font-semibold mb-4 text-primary">Refund Process</h3>
-              <p className="mb-4">
-                If you believe you qualify for a refund based on the eligible circumstances listed above:
-              </p>
-              <ol className="space-y-2 list-decimal list-inside">
-                <li>Contact our support team with your purchase details</li>
-                <li>Provide proof of payment and course enrollment information</li>
-                <li>Explain the specific circumstance that qualifies you for a refund</li>
-                <li>Allow 5-7 business days for review and processing</li>
-              </ol>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-4 text-primary">Contact Information</h3>
-              <p>
-                For refund requests or questions about this policy, please contact our support team. Include your order number, payment details, and a clear explanation of your situation.
-              </p>
-            </div>
-
-            <div className="bg-muted/50 border border-muted rounded-lg p-4 mt-8">
-              <p className="text-center text-sm text-muted-foreground">
-                This policy is effective as of {new Date().getFullYear()} and may be updated from time to time. 
-                Please check this page periodically for any changes.
-              </p>
-            </div>
           </CardContent>
         </Card>
 
