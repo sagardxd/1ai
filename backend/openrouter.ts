@@ -7,8 +7,6 @@ export const createCompletion = async (messages: Message[],
     cb: (chunk: string) => void
 ) => {
     return new Promise<void>(async (resolve, reject) => {
-      console.log("sent");
-      console.log(messages);
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -65,8 +63,6 @@ export const createCompletion = async (messages: Message[],
                     const parsed = JSON.parse(data);
                     const content = parsed.choices?.[0]?.delta?.content;
                     if (content) {
-                      console.log("content");
-                      console.log(content);
                       cb(content);
                     }
                   } catch (e) {
