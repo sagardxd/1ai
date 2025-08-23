@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { BACKEND_URL } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const isEmailValid = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -13,6 +14,7 @@ const isEmailValid = (email: string) => {
 
 export function Email({setEmail, setStep, email}: {setEmail: (email: string) => void, setStep: (step: string) => void, email: string}) {   
     const router = useRouter();
+    const [sendingRequest, setSendingRequest] = useState(false);
     return (
         <div className="mx-auto max-h-screen max-w-6xl">
         <div className="absolute top-4 left-4">
@@ -41,9 +43,10 @@ export function Email({setEmail, setStep, email}: {setEmail: (email: string) => 
             className="h-14 w-[25rem] text-lg font-semibold text-white"
           />
           <Button
-            disabled={!isEmailValid(email)}
+            disabled={!isEmailValid(email) || sendingRequest}
             variant="accent"
             onClick={() => {
+                setSendingRequest(true);
                 fetch(`${BACKEND_URL}/auth/initiate_signin`, {
                     method: "POST",
                     body: JSON.stringify({ email }),
@@ -60,6 +63,8 @@ export function Email({setEmail, setStep, email}: {setEmail: (email: string) => 
                 }).catch((err) => {
                     console.error(err);
                     toast.error("Failed to send OTP, please retry after a few minutes");
+                }).finally(() => {
+                    setSendingRequest(false);
                 });
             }}
             className="h-14 w-[25rem] text-lg font-semibold text-white"
