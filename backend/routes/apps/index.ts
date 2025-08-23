@@ -18,14 +18,17 @@ router.post("/article-summarizer", (req, res) => {
     const articleSummarizer = new ArticleSummarizer();
     
     // Validate the input using the app's schema
-    const result = articleSummarizer.zodSchema.safeParse(req.body);
+    const result = articleSummarizer.zodSchema.safeParse({
+        ...req.body,
+        userId: req.userId
+    });
     
     if (!result.success) {
         res.status(400).json({ error: result.error.message });
         return;
     }
     
-    articleSummarizer.runStreamable(result.data as { article: string }, (chunk: string) => {
+    articleSummarizer.runStreamable(result.data as any, (chunk: string) => {
         // Send data in SSE format
         res.write(`data: ${chunk}\n\n`);
     }).then(() => {
