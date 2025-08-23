@@ -83,16 +83,36 @@ const RazorpayPayment: React.FC<RazorpayPaymentProps> = ({
               toast.success("Payment successful! Your subscription is being activated...", {
                 duration: 3000
               });
-              
-              // Show processing message
-              toast.loading("Processing subscription activation...", { id: "activation" });
-              
-              // Redirect to landing page after a delay to allow webhook processing
-              setTimeout(() => {
-                toast.dismiss("activation");
-                toast.success("Welcome to 1AI Premium! 🎉");
-                window.location.href = "/";
-              }, 5000);
+
+              let signature = response.razorpay_signature;
+              let razorpay_payment_id = response.razorpay_payment_id;
+
+              try {
+                axios.post(
+                    `${BACKEND_URL}/billing/verify-payment`,
+                    {
+                      signature,
+                      razorpay_payment_id,
+                      orderId: response.data.orderId
+                    },
+                    {
+                      headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                      }
+                    }
+                  );
+    
+                  if (response.data.success) {
+                    toast.success("Payment successful! Your subscription is being activated...", {
+                      duration: 3000
+                    });
+                  } else {
+                    toast.error("Payment failed! Please try again.");
+                  }
+              } catch (error: any) {
+                console.error("Error verifying payment:", error);
+                toast.error(error?.response?.data?.error || "Payment failed! Please try again.");
+              }
             }
           },
           modal: {

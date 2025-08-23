@@ -170,6 +170,109 @@ billingRouter.post('/get-plans', async (req, res) => {
   return res.json(plans);
 });
 
+// Verify payment signature for subscription payments
+billingRouter.post("/verify-payment", authMiddleware, async (req, res) => {
+  const userId = req.userId;
+  const { signature, razorpay_payment_id, orderId } = req.body;
+
+  if (!signature || !razorpay_payment_id) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Missing signature or payment ID" 
+    });
+  }
+
+  try {
+    // Find the pending payment record for this user
+    const paymentRecord = await prisma.paymentHistory.findFirst({
+      where: {
+        userId: userId,
+        status: "PENDING",
+        bankReference: orderId
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    if (!paymentRecord) {
+      return res.status(404).json({
+        success: false,
+        error: "No pending payment found"
+      });
+    }
+
+    // Find the subscription record to get the subscription_id
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        userId: userId,
+        rzpSubscriptionId: orderId
+      }
+    });
+
+    if (!subscription) {
+      return res.status(404).json({
+        success: false,
+        error: "Subscription not found"
+      });
+    }
+
+    // Generate signature using subscription_id (not razorpay_subscription_id)
+    const expectedSignature = crypto
+      .createHmac("sha256", razorPayCredentials.secret)
+      .update(razorpay_payment_id + "|" + subscription.rzpSubscriptionId)
+      .digest("hex");
+
+    // Verify signature
+    if (expectedSignature === signature) {
+      // Payment is authentic - update records
+      await prisma.paymentHistory.update({
+        where: { paymentId: paymentRecord.paymentId },
+        data: {
+          status: "SUCCESS",
+          cfPaymentId: razorpay_payment_id
+        }
+      });
+
+      // Update user to premium status and add credits
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          isPremium: true,
+          credits: { increment: 1000 } // Add 1000 credits for premium subscription
+        }
+      });
+
+      // Subscription is already created and active based on endDate
+
+      return res.json({
+        success: true,
+        message: "Payment verified successfully"
+      });
+    } else {
+      // Invalid signature
+      await prisma.paymentHistory.update({
+        where: { paymentId: paymentRecord.paymentId },
+        data: {
+          status: "FAILED"
+        }
+      });
+
+      return res.status(400).json({
+        success: false,
+        error: "Invalid payment signature"
+      });
+    }
+  } catch (error: any) {
+    console.error("Error verifying payment:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error during payment verification",
+      details: error.message
+    });
+  }
+});
+
 // New endpoint to check user credits
 billingRouter.get("/credits/:userId", authMiddleware, async (req, res) => {
   const { userId } = req.params;
