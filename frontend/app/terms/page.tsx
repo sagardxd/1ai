@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScaleIcon } from "@phosphor-icons/react/dist/ssr";
+import { ScalesIcon } from "@phosphor-icons/react/dist/ssr";
 
 export default function TermsAndConditions() {
   return (
@@ -9,7 +9,7 @@ export default function TermsAndConditions() {
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
             <div className="bg-primary drop-shadow-primary flex size-16 items-center justify-center rounded-2xl drop-shadow-lg">
-              <ScaleIcon
+              <ScalesIcon
                 className="size-8"
                 weight="duotone"
                 fill="var(--foreground)"
