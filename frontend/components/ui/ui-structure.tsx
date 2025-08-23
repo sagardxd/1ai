@@ -17,17 +17,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Input } from "./input";
 import {
-  BookmarkIcon,
   MagnifyingGlassIcon,
   ShareFatIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-import { Separator } from "./separator";
 import { toast } from "sonner";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Logo } from "../svgs/logo";
-import { useSession } from "next-auth/react";
 import { Conversation, useConversation } from "@/hooks/useConversation";
 import { useUser } from "@/hooks/useUser";
 
@@ -115,10 +111,10 @@ export function UIStructure() {
                           className="group hover:bg-primary/20 relative"
                           onMouseEnter={() => setHoverChatId(chat.id)}
                           onMouseLeave={() => setHoverChatId("")}
-                          asChild
+                          onClick={() => router.push(`/ask/${chat.id}`)}
                         >
                           <div className="flex w-full items-center justify-between">
-                              <span className="z-[-1]">
+                              <span className="z-[-1] cursor-pointer truncate">
                                 {chat.title}
                               </span>
                               <div
