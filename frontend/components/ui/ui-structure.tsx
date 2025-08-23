@@ -160,23 +160,6 @@ export function UIStructure() {
           </SidebarGroupContent>
         </SidebarGroup>
         <SidebarFooter className="bg-background absolute bottom-0 z-[70] h-20 w-full px-4 py-3">
-          {/* {user && (
-            <div className="flex items-center space-x-3">
-              <img
-                src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXXckRlC33zt7zHBLpEEEeqY_MGIn89LOdGw&s"}
-                alt={user.name ?? "User"}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-              <div className="flex flex-col text-sm">
-                <span className="font-medium">{user.name ?? "Anonymous"}</span>
-                {user.email && (
-                  <span className="w-36 truncate text-xs text-muted-foreground">
-                    {user.email}
-                  </span>
-                )}
-              </div>
-            </div>
-          )} */}
           {user && (
             <Button
               onClick={(e) => {

@@ -16,17 +16,17 @@ export const Footer = () => {
         
         <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm">
           <a 
-            href="/terms" 
+            href="/about" 
             className="text-muted-foreground hover:text-primary transition-colors duration-200"
           >
-            Terms & Conditions
+            About Us
           </a>
           <span className="text-muted-foreground/50">•</span>
           <a 
-            href="/refund" 
+            href="/contact" 
             className="text-muted-foreground hover:text-primary transition-colors duration-200"
           >
-            Refund Policy
+            Contact
           </a>
           <span className="text-muted-foreground/50">•</span>
           <a 
@@ -34,6 +34,20 @@ export const Footer = () => {
             className="text-muted-foreground hover:text-primary transition-colors duration-200"
           >
             Pricing
+          </a>
+          <span className="text-muted-foreground/50">•</span>
+          <a 
+            href="/terms" 
+            className="text-muted-foreground hover:text-primary transition-colors duration-200"
+          >
+            Terms
+          </a>
+          <span className="text-muted-foreground/50">•</span>
+          <a 
+            href="/refund" 
+            className="text-muted-foreground hover:text-primary transition-colors duration-200"
+          >
+            Refund Policy
           </a>
         </div>
       </div>
