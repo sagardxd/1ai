@@ -115,7 +115,7 @@ router.post("/signin", perMinuteLimiterRelaxed, async (req, res) => {
         userId: user.id
     }, process.env.JWT_SECRET!);
 
-    res.json({
+    res.status(200).json({
         token
     })
 })

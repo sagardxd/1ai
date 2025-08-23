@@ -13,6 +13,37 @@ export function Otp({email}: {email: string}) {
     const [otp, setOtp] = useState("");
     const router = useRouter();
 
+    const handleLogin = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/auth/signin`, {
+          method: "POST",
+          body: JSON.stringify({ email, otp }),
+          headers: {
+              "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.status === 401) {
+          toast(data.message);
+        }
+
+        if (response.status === 429) {
+          toast(data.message);
+        }
+
+        if (response.status === 200) {
+          toast("User Logged In");
+          router.replace('ask');
+        } else if (response.status !== 401 && response.status !== 429) {
+          toast(data.message || "An unexpected error occurred");
+        }
+      } catch (error) {
+        console.error("Some error occured ", error);
+      }
+    }
+
     return (
         <div className="mx-auto max-h-screen max-w-6xl">
         <div className="absolute top-4 left-4">
@@ -49,25 +80,7 @@ export function Otp({email}: {email: string}) {
           />
           <Button
             variant="accent"
-            onClick={() => {
-                fetch(`${BACKEND_URL}/auth/signin`, {
-                    method: "POST",
-                    body: JSON.stringify({ email, otp }),
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }).then((res) => {
-                    res.json().then((data) => {
-                        localStorage.setItem("token", data.token);
-                        // hyderate user in the useUser hook
-                        //@ts-ignore
-                        window.location = "/"
-                    });
-                }).catch((err) => {
-                    toast.error("Invalid OTP");
-                    console.error(err);
-                });
-            }}
+            onClick={handleLogin}
             className="h-14 w-[25rem] text-lg font-semibold text-white"
           >
             Login
