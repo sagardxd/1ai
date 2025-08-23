@@ -28,6 +28,7 @@ export default function ChatLayout({
             <div className="absolute top-0 left-0 z-[50] flex h-12 w-full items-center justify-between px-3">
               <SidebarToggle />
               <div className="flex items-center gap-2">
+                <UpgradeCTA variant="topbar" />
                 {/* <Link
                   className="hover:bg-accent flex size-7 items-center justify-center rounded-lg"
                   href="/settings/subscription"
@@ -38,9 +39,7 @@ export default function ChatLayout({
               </div>
             </div>
             <div className="mx-auto flex max-h-fit w-full max-w-3xl flex-col overflow-y-hidden">
-              <div className="mt-12 mb-2">
-                <UpgradeCTA variant="minimal" />
-              </div>
+              
               <div className="flex-1">
                 {children}
               </div>

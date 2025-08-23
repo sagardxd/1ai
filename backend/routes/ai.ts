@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { CreateChatSchema, Role } from "../types";
+import { CreateChatSchema, MODELS, Role } from "../types";
 import { createCompletion } from "../openrouter";
 import { InMemoryStore } from "../InMemoryStore";
 import { authMiddleware } from "../auth-middleware";
@@ -59,6 +59,14 @@ router.post("/chat", authMiddleware, async (req, res) => {
         return
     }
 
+    const model = MODELS.find((model) => model.id === data.model);
+    if (!model) {
+        res.status(404).json({
+            message: "Model not found"
+        });
+        return;
+    }
+
     // Check user credits before processing
     const user = await prismaClient.user.findUnique({
         where: { id: userId },
@@ -68,6 +76,14 @@ router.post("/chat", authMiddleware, async (req, res) => {
     if (!user) {
         res.status(404).json({
             message: "User not found"
+        });
+        return;
+    }
+
+    if (model.isPremium && !user?.isPremium) {
+        res.status(403).json({
+            message: "Insufficient credits. Please subscribe to continue.",
+            credits: user?.credits
         });
         return;
     }
@@ -94,8 +110,7 @@ router.post("/chat", authMiddleware, async (req, res) => {
             }
         })
     }
-    if (false) {
-    // if (user.credits <= 0) {
+    if (user.credits <= 0) {
         res.status(403).json({
             message: "Insufficient credits. Please subscribe to continue.",
             credits: user.credits

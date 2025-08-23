@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { Logo } from "../svgs/logo";
 import { Conversation, useConversation } from "@/hooks/useConversation";
 import { useUser } from "@/hooks/useUser";
+import { useCredits } from "@/hooks/useCredits";
 
 interface Chat {
   id: string;
@@ -60,6 +61,7 @@ export function UIStructure() {
   };
 
   const { user, isLoading: isUserLoading } = useUser();
+  const { userCredits } = useCredits();
 
   return (
     <Sidebar className={`border py-2 pl-2`}>

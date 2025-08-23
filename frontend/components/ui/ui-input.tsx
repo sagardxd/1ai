@@ -29,6 +29,8 @@ import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { useConversationById } from "@/hooks/useConversation";
+import { useCredits } from "@/hooks/useCredits";
+import { UpgradeCTA } from "@/components/ui/upgrade-cta";
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
@@ -63,6 +65,7 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
   const { resolvedTheme } = useTheme();
   const { user, isLoading: isUserLoading } = useUser();
   const {conversation, loading : converstionLoading} = useConversationById(initialConversationId)
+  const { userCredits, isLoading: isCreditsLoading, refetchCredits } = useCredits();
   const router = useRouter();
 
   const toggleWrap = useCallback(() => {
@@ -87,6 +90,18 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
 
   const processStream = async (response: Response, userMessage: string) => {
     if (!response.ok) {
+      // Handle credit-related errors
+      if (response.status === 403) {
+        try {
+          const errorData = await response.json();
+          if (errorData.message?.includes("Insufficient credits")) {
+            // Refetch credits to update UI
+            await refetchCredits();
+          }
+        } catch (e) {
+          console.error("Error parsing error response:", e);
+        }
+      }
       console.error("Error from API:", response.statusText);
       setIsLoading(false);
       return;
@@ -204,7 +219,14 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
     if (!user) {
       router.push("/auth");
       return;
-    };
+    }
+
+    // Check if user has credits
+    if (userCredits && userCredits.credits <= 0 && !userCredits.isPremium) {
+      // Don't allow chat if no credits
+      return;
+    }
+
     if (!query.trim() || isLoading) return;
 
     setShowWelcome(false);
@@ -506,6 +528,15 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
           </div>
         )}
 
+        {/* Show upgrade prompt when user has no credits */}
+        {userCredits && userCredits.credits <= 0 && !userCredits.isPremium && (
+          <div className="mb-4 w-full px-4 md:px-8">
+            <div className="mx-auto w-full max-w-4xl">
+              <UpgradeCTA variant="banner" />
+            </div>
+          </div>
+        )}
+
         <div className="bg-muted border-border/20 mb-4 w-full rounded-2xl border-t p-2">
           <div className="mx-auto w-full max-w-4xl">
             <form
@@ -522,23 +553,25 @@ const UIInput = ({ conversationId: initialConversationId  }: UIInputProps = {}) 
                   }
                 }}
                 placeholder={
-                  "Ask whatever you want to be"
+                  userCredits && userCredits.credits <= 0 && !userCredits.isPremium
+                    ? "You need credits to start a chat. Please upgrade to continue."
+                    : "Ask whatever you want to be"
                 }
                 className="h-[2rem] resize-none rounded-none border-none bg-transparent px-0 py-1 shadow-none ring-0 focus-visible:ring-0 dark:bg-transparent"
-                disabled={isLoading}
+                disabled={isLoading || !!(userCredits && userCredits.credits <= 0 && !userCredits.isPremium)}
               />
               <div className="mt-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ModelSelector
                     value={model}
                     onValueChange={setModel}
-                    disabled={isLoading}
+                    disabled={isLoading || !!(userCredits && userCredits.credits <= 0 && !userCredits.isPremium)}
                   />
                 </div>
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={isLoading || !query.trim()}
+                  disabled={isLoading || !query.trim() || !!(userCredits && userCredits.credits <= 0 && !userCredits.isPremium)}
                 >
                   {isLoading ? (
                     <SpinnerGapIcon className="animate-spin" />

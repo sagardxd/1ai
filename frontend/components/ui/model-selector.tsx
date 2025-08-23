@@ -19,7 +19,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AlertCircleIcon, CheckCircleIcon, InfoIcon } from "lucide-react";
+import { AlertCircleIcon, CheckCircleIcon, InfoIcon, Crown } from "lucide-react";
+import { useCredits } from "@/hooks/useCredits";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ModelSelectorProps {
   value?: string;
@@ -37,7 +40,7 @@ export function ModelSelector({
   const [selectedModel, setSelectedModel] = useState<string>(
     value ?? DEFAULT_MODEL_ID,
   );
-
+  const { userCredits } = useCredits();
 
   useEffect(() => {
     if (value && value !== selectedModel) {
@@ -133,9 +136,12 @@ export function ModelSelector({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
+        {/* Free Models Section */}
         <SelectGroup>
-          <SelectLabel>Models</SelectLabel>
-          {MODELS.map((model) => (
+          <SelectLabel className="flex items-center gap-2">
+            <span>Free Models</span>
+          </SelectLabel>
+          {MODELS.filter(model => !model.isPremium).map((model) => (
             <SelectItem
               key={model.id}
               value={model.id}
@@ -149,6 +155,47 @@ export function ModelSelector({
               </div>
             </SelectItem>
           ))}
+        </SelectGroup>
+
+        {/* Premium Models Section */}
+        <SelectGroup>
+          <SelectLabel className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Crown className="h-4 w-4 text-primary" />
+              <span>Premium Models</span>
+            </div>
+            {!userCredits?.isPremium && (
+              <Link href="/pricing">
+                <Button 
+                  size="sm" 
+                  variant="default" 
+                  className="h-6 px-2 text-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Upgrade
+                </Button>
+              </Link>
+            )}
+          </SelectLabel>
+          {MODELS.filter(model => model.isPremium).map((model) => {
+            const isPremiumLocked = !userCredits?.isPremium;
+            const isDisabled = model.isAvailable === false || isPremiumLocked;
+            
+            return (
+              <SelectItem
+                key={model.id}
+                value={model.id}
+                disabled={isDisabled}
+                className={isDisabled ? "opacity-60" : ""}
+              >
+                <div className="flex items-center gap-2">
+                  {showIcons && getModelProviderIcon(model)}
+                  <span>{model.name}</span>
+                  {getModelStatusIcon(model)}
+                </div>
+              </SelectItem>
+            );
+          })}
         </SelectGroup>
       </SelectContent>
     </Select>
