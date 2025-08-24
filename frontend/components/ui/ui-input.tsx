@@ -21,7 +21,7 @@ import TabsSuggestion from "./tabs-suggestion";
 import { ModelSelector } from "@/components/ui/model-selector";
 import { DEFAULT_MODEL_ID } from "@/models/constants";
 import { useTheme } from "next-themes";
-import { ArrowUpIcon, WrapText } from "lucide-react";
+import { ArrowUpIcon, Code, EyeIcon, WrapText } from "lucide-react";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,7 @@ import { useConversationById } from "@/hooks/useConversation";
 import { useCredits } from "@/hooks/useCredits";
 import { UpgradeCTA } from "@/components/ui/upgrade-cta";
 import { useExecutionContext } from "@/contexts/execution-context";
+import CodePreview from "@/components/ui/code-preview";
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
@@ -62,6 +63,8 @@ const UIInput = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [isWrapped, setIsWrapped] = useState(false);
+  const [activePreviewId, setActivePreviewId] = useState<string | null>(null);
+  const [loadingPreviewId, setLoadingPreviewId] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(
     initialConversationId || v4()
   );
@@ -294,6 +297,12 @@ const UIInput = ({
     }
   };
 
+  // Function to toggle preview for a specific code block
+  const toggleShowPreview = useCallback((codeBlockId: string, content: string) => {
+    setActivePreviewId(prev => prev === codeBlockId ? null : codeBlockId);
+  }, []);
+
+
   if (initialConversationId && converstionLoading) {
     return (
       <div className="flex w-full overflow-hidden h-[96dvh]">
@@ -330,7 +339,7 @@ const UIInput = ({
         ) : (
           <div className="no-scrollbar mt-6 flex h-full w-full flex-1 flex-col gap-4 overflow-y-auto px-4 pt-4 pb-10 md:px-8">
             <div className="mx-auto h-full w-full max-w-4xl">
-              {messages.map((message) => (
+              {messages.map((message, messageIndex) => (
                 <div
                   key={message.id}
                   className={`group mb-8 flex w-full flex-col ${message.role === "assistant" ? "items-start" : "items-end"} gap-2`}
@@ -356,17 +365,26 @@ const UIInput = ({
                               ? children
                               : "";
 
-                          return isInline ? (
-                            <code
-                              className={cn(
-                                "bg-accent rounded-sm px-1 py-0.5 text-sm",
-                                geistMono.className
-                              )}
-                              {...rest}
-                            >
-                              {children}
-                            </code>
-                          ) : (
+                          if (isInline) {
+                            return (
+                              <code
+                                className={cn(
+                                  "bg-accent rounded-sm px-1 py-0.5 text-sm",
+                                  geistMono.className
+                                )}
+                                {...rest}
+                              >
+                                {children}
+                              </code>
+                            );
+                          }
+
+                          const lang = match ? match[1] : "text";
+                          // Create unique ID for each code block
+                          const codeBlockId = `${message.id}-${messageIndex}-${lang}`;
+                          const isPreviewMode = activePreviewId == codeBlockId;
+
+                          return (
                             <div
                               className={`${geistMono.className} my-4 overflow-hidden rounded-md`}
                             >
@@ -409,46 +427,67 @@ const UIInput = ({
                                       </>
                                     )}
                                   </button>
+                                  {/* preview button only for HTML */}
+                                  {lang === "html" && (
+                                    <button
+                                      onClick={() => toggleShowPreview(codeBlockId, codeContent)}
+                                      className={cn(
+                                        "hover:bg-muted/40 flex items-center gap-1.5 rounded px-2 py-1 text-xs font-medium transition-all duration-200",
+                                        isPreviewMode && "bg-primary/20 text-primary"
+                                      )}
+                                    >
+                                      {isPreviewMode ?
+                                        <div className="flex"><Code className="size-4" /> Code </div>
+                                        :
+                                        <div className="flex"><EyeIcon className="size-4" /> Preview </div>}
+                                    </button>
+                                  )}
                                 </div>
                               </div>
-                              <SyntaxHighlighter
-                                language={match ? match[1] : "text"}
-                                style={atomOneDark}
-                                customStyle={{
-                                  margin: 0,
-                                  padding: "1rem",
-                                  backgroundColor:
-                                    resolvedTheme === "dark"
-                                      ? "#1a1620"
-                                      : "#f5ecf9",
-                                  color:
-                                    resolvedTheme === "dark"
-                                      ? "#e5e5e5"
-                                      : "#171717",
-                                  borderRadius: 0,
-                                  borderBottomLeftRadius: "0.375rem",
-                                  borderBottomRightRadius: "0.375rem",
-                                  fontSize: "1.2rem",
-                                  fontFamily: `var(--font-geist-mono), ${geistMono.style.fontFamily}`,
-                                }}
-                                wrapLongLines={isWrapped}
-                                codeTagProps={{
-                                  style: {
-                                    fontFamily: `var(--font-geist-mono), ${geistMono.style.fontFamily}`,
-                                    fontSize: "0.85em",
-                                    whiteSpace: isWrapped ? "pre-wrap" : "pre",
-                                    overflowWrap: isWrapped
-                                      ? "break-word"
-                                      : "normal",
-                                    wordBreak: isWrapped
-                                      ? "break-word"
-                                      : "keep-all",
-                                  },
-                                }}
-                                PreTag="div"
-                              >
-                                {codeContent}
-                              </SyntaxHighlighter>
+                              {
+                                isPreviewMode ?
+                                  <CodePreview code={codeContent} />
+                                  :
+                                  <SyntaxHighlighter
+                                    language={match ? match[1] : "text"}
+                                    style={atomOneDark}
+                                    customStyle={{
+                                      margin: 0,
+                                      padding: "1rem",
+                                      backgroundColor:
+                                        resolvedTheme === "dark"
+                                          ? "#1a1620"
+                                          : "#f5ecf9",
+                                      color:
+                                        resolvedTheme === "dark"
+                                          ? "#e5e5e5"
+                                          : "#171717",
+                                      borderRadius: 0,
+                                      borderBottomLeftRadius: "0.375rem",
+                                      borderBottomRightRadius: "0.375rem",
+                                      fontSize: "1.2rem",
+                                      fontFamily: `var(--font-geist-mono), ${geistMono.style.fontFamily}`,
+                                    }}
+                                    wrapLongLines={isWrapped}
+                                    codeTagProps={{
+                                      style: {
+                                        fontFamily: `var(--font-geist-mono), ${geistMono.style.fontFamily}`,
+                                        fontSize: "0.85em",
+                                        whiteSpace: isWrapped ? "pre-wrap" : "pre",
+                                        overflowWrap: isWrapped
+                                          ? "break-word"
+                                          : "normal",
+                                        wordBreak: isWrapped
+                                          ? "break-word"
+                                          : "keep-all",
+                                      },
+                                    }}
+                                    PreTag="div"
+                                  >
+                                    {codeContent}
+                                  </SyntaxHighlighter>
+                              }
+
                             </div>
                           );
                         },
@@ -557,8 +596,8 @@ const UIInput = ({
                 }}
                 placeholder={
                   userCredits &&
-                  userCredits.credits <= 0 &&
-                  !userCredits.isPremium
+                    userCredits.credits <= 0 &&
+                    !userCredits.isPremium
                     ? "You need credits to start a chat. Please upgrade to continue."
                     : "Ask anything"
                 }
