@@ -547,6 +547,7 @@ const UIInput = ({
               className="bg-accent/30 dark:bg-accent/10 flex w-full flex-col rounded-xl p-3"
             >
               <Textarea
+                autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
