@@ -17,6 +17,16 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Input } from "./input";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   MagnifyingGlassIcon,
   ShareFatIcon,
   TrashIcon,
@@ -32,6 +42,7 @@ import { Execution } from "@/hooks/useExecution";
 export function UIStructure() {
   const [uiExecutions, setUiExecutions] = useState<Execution[]>([]);
   const [hoverChatId, setHoverChatId] = useState<string>("");
+  const [isAppsDialogOpen, setIsAppsDialogOpen] = useState(false);
   const { executions, loading, createNewExecution } = useExecutionContext();
   const router = useRouter();
 
@@ -51,6 +62,22 @@ export function UIStructure() {
   };
 
   const { user, isLoading: isUserLoading } = useUser();
+
+  // Available AI Apps
+  const availableApps = [
+    {
+      id: "article-summarizer",
+      name: "Article Summarizer",
+      description: "Summarize long articles into concise, easy-to-read summaries",
+      icon: "📄",
+      credits: 2
+    }
+  ];
+
+  const handleAppNavigation = (appId: string) => {
+    router.push(`/apps/${appId}`);
+    setIsAppsDialogOpen(false);
+  };
 
   return (
     <Sidebar className={`border py-2 pl-2`}>
@@ -157,6 +184,53 @@ export function UIStructure() {
               </Button>
             </Link>
           )}
+          <Dialog open={isAppsDialogOpen} onOpenChange={setIsAppsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="secondary"
+                className="w-full"
+                size="lg"
+              >
+                AI Apps
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[525px]">
+              <DialogHeader>
+                <DialogTitle>AI Apps</DialogTitle>
+                <DialogDescription>
+                  Choose from our collection of AI-powered applications to enhance your productivity.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid gap-4 py-4">
+                {availableApps.map((app) => (
+                  <div
+                    key={app.id}
+                    className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent/50 cursor-pointer transition-colors"
+                    onClick={() => handleAppNavigation(app.id)}
+                  >
+                    <div className="text-2xl">{app.icon}</div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg">{app.name}</h3>
+                      <p className="text-sm text-muted-foreground">{app.description}</p>
+                      <div className="flex items-center gap-1 mt-1">
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                          {app.credits} credits per use
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Close</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           {user && (
             <Button
               variant="destructive"
