@@ -75,7 +75,7 @@ export function UIStructure() {
   ];
 
   const handleAppNavigation = (appId: string) => {
-    router.push(`/apps/${appId}`);
+    router.push(`/apps/${appId}/`);
     setIsAppsDialogOpen(false);
   };
 
